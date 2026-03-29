@@ -1,90 +1,188 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('focus-tasks');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [inputValue, setInputValue] = useState('');
+  const [filter, setFilter] = useState('all');
 
-  // Add a new task
+  // Derived state for better UX
+  const activeCount = tasks.filter(t => !t.completed).length;
+  const completedCount = tasks.filter(t => t.completed).length;
+  const filteredTasks = tasks.filter(task => {
+    if (filter === 'active') return !task.completed;
+    if (filter === 'completed') return task.completed;
+    return true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('focus-tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
   const addTask = (e) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    const cleanText = inputValue.trim();
+    if (!cleanText) return;
 
     const newTask = {
       id: crypto.randomUUID(),
-      text: inputValue,
+      text: cleanText,
       completed: false,
-      createdAt: new Date().toISOString(),
     };
 
-    setTasks([...tasks, newTask]);
+    setTasks([newTask, ...tasks]); // New tasks at the top
     setInputValue('');
   };
 
-  // Toggle complete status
   const toggleComplete = (id) => {
     setTasks(tasks.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
     ));
   };
 
-  // Delete a task
   const deleteTask = (id) => {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
+  const clearCompleted = () => {
+    setTasks(tasks.filter(task => !task.completed));
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">My Tasks</h1>
+    <div className="app-shell">
+      <div className="todo-card">
         
-        {/* Input Form */}
-        <form onSubmit={addTask} className="flex gap-2 mb-6">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="What needs to be done?"
-            className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button 
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-          >
-            Add
-          </button>
-        </form>
+        {/* Header Section */}
+        <div className="todo-header">
+          <div className="header-top">
+            <h1 className="todo-title">Focus</h1>
+            <span className="badge badge-soft">
+              {activeCount} left
+            </span>
+          </div>
+          <p className="todo-subtitle">
+            {tasks.length > 0 
+              ? `You have ${activeCount} task${activeCount === 1 ? '' : 's'} to finish today` 
+              : "Ready to start your day?"}
+          </p>
+        </div>
 
-        {/* Task List */}
-        <ul className="space-y-3">
-          {tasks.map(task => (
-            <li 
-              key={task.id} 
-              className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50"
+        {/* Input Section - Offset to overlap header */}
+        <div className="todo-input-wrap">
+          <form onSubmit={addTask} className="todo-form">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Add a new task..."
+              className="todo-input"
+            />
+            <button 
+              type="submit"
+              disabled={!inputValue.trim()}
+              className="btn btn-primary"
             >
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => toggleComplete(task.id)}
-                  className="h-5 w-5 cursor-pointer"
-                />
-                <span className={`${task.completed ? 'line-through text-gray-400' : 'text-gray-700'}`}>
-                  {task.text}
-                </span>
-              </div>
-              <button 
-                onClick={() => deleteTask(task.id)}
-                className="text-red-500 hover:text-red-700 text-sm font-medium"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
+              Add
+            </button>
+          </form>
+        </div>
 
-        {tasks.length === 0 && (
-          <p className="text-center text-gray-500 mt-4">No tasks yet. Add one above!</p>
-        )}
+        {/* List Section */}
+        <div className="todo-content">
+          <div className="list-toolbar">
+            <h2 className="section-label">Tasks</h2>
+            <div className="toolbar-right">
+              <span className="badge">
+                {completedCount}/{tasks.length} Done
+              </span>
+              {completedCount > 0 && (
+                <button
+                  onClick={clearCompleted}
+                  className="btn btn-ghost"
+                >
+                  Clear completed
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            {['all', 'active', 'completed'].map(option => (
+              <button
+                key={option}
+                onClick={() => setFilter(option)}
+                className={`filter-chip ${
+                  filter === option
+                    ? 'filter-chip--active'
+                    : ''
+                }`}
+              >
+                {option.charAt(0).toUpperCase() + option.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <ul className="todo-list">
+            {filteredTasks.map(task => (
+              <li 
+                key={task.id} 
+                className="task-item"
+              >
+                <div className="task-left">
+                  <div className="task-check-wrap">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => toggleComplete(task.id)}
+                      className="task-checkbox"
+                    />
+                    {/* Custom checkmark icon */}
+                    <svg className="checkmark-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className={`task-text ${task.completed ? 'task-text--completed' : ''}`}>
+                    {task.text}
+                  </span>
+                </div>
+                <button 
+                  onClick={() => deleteTask(task.id)}
+                  className="icon-btn"
+                  aria-label="Delete task"
+                >
+                  <svg className="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {filteredTasks.length === 0 && (
+            <div className="empty-state">
+              <div className="empty-icon-wrap">
+                <svg className="empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <p className="empty-title">
+                {tasks.length === 0 ? 'All caught up!' : `No ${filter} tasks`}
+              </p>
+              <p className="empty-subtitle">
+                {tasks.length === 0
+                  ? 'Add a task to get started.'
+                  : 'Try switching filters to see more tasks.'}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
