@@ -65,6 +65,20 @@ function App() {
     addTaskByText(label);
   };
 
+  const addAllSuggestions = () => {
+    if (!recommendations) return;
+    const labels = [recommendations.primary, ...recommendations.alternatives].filter(
+      Boolean
+    );
+    if (labels.length === 0) return;
+    const newTasks = labels.map((text) => ({
+      id: crypto.randomUUID(),
+      text: String(text).trim(),
+      completed: false,
+    }));
+    setTasks((prev) => [...newTasks, ...prev]);
+  };
+
   const toggleComplete = (id) => {
     setTasks(tasks.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
@@ -124,13 +138,22 @@ function App() {
               </p>
               <div className="recommend-primary-row">
                 <span className="recommend-primary-text">{recommendations.primary}</span>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
-                  onClick={confirmPrimarySuggestion}
-                >
-                  Confirm add
-                </button>
+                <div className="recommend-actions">
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={confirmPrimarySuggestion}
+                  >
+                    Confirm add
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={addAllSuggestions}
+                  >
+                    Add all
+                  </button>
+                </div>
               </div>
               {recommendations.alternatives.length > 0 && (
                 <div className="recommend-alternatives">
