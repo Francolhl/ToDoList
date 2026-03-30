@@ -208,6 +208,86 @@ const RAW_CATEGORIES = [
       'bank', 'salary',
     ],
   },
+  {
+    id: 'product_launch',
+    label: 'Launch & GTM',
+    items: [
+      'Finalize PRD',
+      'Update changelog',
+      'Internal demo',
+      'Prepare marketing assets',
+      'Review analytics tracking',
+      'Community announcement',
+    ],
+    triggers: [
+      'launch', 'release', 'gtm', 'go-to-market', 'ship', 'shipping', 'deployment',
+      'live', 'production', 'version', 'update', 'announcement', 'marketing',
+    ],
+  },
+  {
+    id: 'user_research',
+    label: 'Research & Insights',
+    items: [
+      'Interview script',
+      'Recruit participants',
+      'Synthesize findings',
+      'Competitor analysis',
+      'Survey distribution',
+      'Persona update',
+    ],
+    triggers: [
+      'research', 'interview', 'user', 'customers', 'feedback', 'insights',
+      'survey', 'data', 'discovery', 'competitor', 'benchmark',
+    ],
+  },
+  {
+    id: 'events_networking',
+    label: 'Events & Networking',
+    items: [
+      'Update LinkedIn',
+      'Prepare business cards',
+      'Follow up emails',
+      'RSVP to event',
+      'Prepare elevator pitch',
+      'Review guest list',
+    ],
+    triggers: [
+      'event', 'conference', 'meetup', 'networking', 'mixer', 'talk', 'speech',
+      'panel', 'seminar', 'webinar', 'connect', 'linkedin',
+    ],
+  },
+  {
+    id: 'self_care',
+    label: 'Self-care & Focus',
+    items: [
+      'Meditation',
+      'Journaling',
+      'Digital detox',
+      'Reading time',
+      'Walk in nature',
+      'Breathing exercises',
+    ],
+    triggers: [
+      'rest', 'relax', 'mental', 'health', 'meditate', 'journal', 'break',
+      'morning', 'evening', 'routine', 'calm', 'stress', 'mindfulness',
+    ],
+  },
+  {
+    id: 'career_growth',
+    label: 'Career & Growth',
+    items: [
+      'Update CV/Resume',
+      'Skill gap analysis',
+      'Portfolio review',
+      'Mentorship session',
+      'Set quarterly OKRs',
+      'Salary benchmarking',
+    ],
+    triggers: [
+      'career', 'job', 'promotion', 'resume', 'cv', 'portfolio', 'interviewing',
+      'growth', 'learning', 'mentor', 'mentee', 'goals', 'okr', 'kpi',
+    ],
+  }
 ];
 
 const CATEGORIES = RAW_CATEGORIES.map((cat) => ({
