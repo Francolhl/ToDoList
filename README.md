@@ -21,7 +21,7 @@ npm install
 npm start
 ```
 
-### Run on Vercel
+## Run on Vercel
 
 https://to-do-list-ae4c.vercel.app/ 
 
