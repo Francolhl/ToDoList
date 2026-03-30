@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
+import { getRecommendations } from './recommendations';
 
 function App() {
   const [tasks, setTasks] = useState(() => {
@@ -26,6 +27,20 @@ function App() {
     localStorage.setItem('focus-tasks', JSON.stringify(tasks));
   }, [tasks]);
 
+  const recommendations = useMemo(
+    () => getRecommendations(inputValue, tasks),
+    [inputValue, tasks]
+  );
+
+  const addTaskByText = (text) => {
+    const clean = String(text).trim();
+    if (!clean) return;
+    setTasks((prev) => [
+      { id: crypto.randomUUID(), text: clean, completed: false },
+      ...prev,
+    ]);
+  };
+
   const addTask = (e) => {
     e.preventDefault();
     const cleanText = inputValue.trim();
@@ -37,8 +52,17 @@ function App() {
       completed: false,
     };
 
-    setTasks([newTask, ...tasks]); // New tasks at the top
+    setTasks([newTask, ...tasks]);
     setInputValue('');
+  };
+
+  const confirmPrimarySuggestion = () => {
+    if (!recommendations?.primary) return;
+    addTaskByText(recommendations.primary);
+  };
+
+  const addAlternative = (label) => {
+    addTaskByText(label);
   };
 
   const toggleComplete = (id) => {
@@ -92,6 +116,41 @@ function App() {
               Add
             </button>
           </form>
+
+          {recommendations && (
+            <div className="recommend-panel" role="region" aria-label="Related task suggestions">
+              <p className="recommend-label">
+                Related to “{recommendations.matchedLabel}”
+              </p>
+              <div className="recommend-primary-row">
+                <span className="recommend-primary-text">{recommendations.primary}</span>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={confirmPrimarySuggestion}
+                >
+                  Confirm add
+                </button>
+              </div>
+              {recommendations.alternatives.length > 0 && (
+                <div className="recommend-alternatives">
+                  <span className="recommend-alt-label">Or add:</span>
+                  <div className="recommend-alt-chips">
+                    {recommendations.alternatives.map((label) => (
+                      <button
+                        key={label}
+                        type="button"
+                        className="chip-btn"
+                        onClick={() => addAlternative(label)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* List Section */}

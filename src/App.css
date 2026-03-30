@@ -168,6 +168,84 @@ body {
   color: #94a3b8;
 }
 
+.btn-sm {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8rem;
+  min-width: auto;
+}
+
+.recommend-panel {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.recommend-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+
+.recommend-primary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.recommend-primary-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.recommend-alternatives {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.recommend-alt-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: 0.45rem;
+}
+
+.recommend-alt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip-btn {
+  border: 1px solid #c7d2fe;
+  background: #fff;
+  color: var(--brand-dark);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.chip-btn:hover {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+}
+
+.chip-btn:active {
+  transform: scale(0.98);
+}
+
 .btn-ghost {
   border: 1px solid var(--border);
   background: #fff;
